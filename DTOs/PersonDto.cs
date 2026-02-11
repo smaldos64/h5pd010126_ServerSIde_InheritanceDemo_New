@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace InheritanceDemo.DTOs
 {
-    [JsonDerivedType(typeof(StudentDto), typeDiscriminator: "student")]
+    [JsonDerivedType(typeof(StudentDtoModels), typeDiscriminator: "student")]
     [JsonDerivedType(typeof(AnsatDto), typeDiscriminator: "ansat")]
     public class PersonDto : Person
     {
