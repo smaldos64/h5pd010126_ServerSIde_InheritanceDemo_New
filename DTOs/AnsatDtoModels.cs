@@ -1,4 +1,6 @@
-﻿using InheritanceDemo.DTOInterfaces;
+﻿using FluentValidation;
+using InheritanceDemo.DTOInterfaces;
+using InheritanceDemo.Models;
 
 namespace InheritanceDemo.DTOs
 {
@@ -15,16 +17,21 @@ namespace InheritanceDemo.DTOs
         public int Id { get; set; }
     }
 
-    //public class AnsatUpdateDto : PersonDto
-    //{
-    //    // Vi kan arve fra PersonDto, da den har alt hvad vi skal bruge til en update
-    //}
-
     // GET: Læsning
     public class AnsatDto : PersonDto
     {
         public decimal MaanedsLoen { get; set; }
         public string AfdelingNavn { get; set; } = String.Empty;
         // Mapster flader denne ud fra Afdeling.Navn
+    }
+
+    public class AnsatCreateDtoValidator : AbstractValidator<AnsatCreateDto>
+    {
+        public AnsatCreateDtoValidator()
+        {
+            RuleFor(a => a.Email).
+            NotEmpty().WithMessage("Email er påkrævet.").
+            EmailAddress().WithMessage("Den indtastede E-mail adresse er ikke gyldig !!!");
+        }
     }
 }

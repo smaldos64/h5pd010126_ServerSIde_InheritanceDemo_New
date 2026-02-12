@@ -1,4 +1,6 @@
-﻿namespace InheritanceDemo.Models
+﻿using FluentValidation;
+
+namespace InheritanceDemo.Models
 {
     // Student med 1:N og N:M relationer
     public class Student : Person

@@ -47,6 +47,8 @@ namespace InheritanceDemo.Controllers
 
         // --- DB HANDLINGER (POST, PUT, DELETE) ---
 
+        // POST
+
         protected async Task<ActionResult<TDto>> CreateAsync<TEntity, TCreateDto, TDto>(TCreateDto dto, string actionName)
             where TEntity : class
         {
@@ -59,6 +61,43 @@ namespace InheritanceDemo.Controllers
 
             return CreatedAtAction(actionName, new { id = idValue }, entity.Adapt<TDto>());
         }
+
+        protected async Task<ActionResult<TDto>> CreateWithMultipleRelationsAsync<TEntity, TCreateDto, TDto>(
+            TCreateDto dto,
+            string actionName,
+            params Func<TEntity, Task>[] relationSyncs) // Vi sender en liste af opgaver med
+            where TEntity : class
+        {
+            // Start Transaction
+            using var transaction = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                var entity = dto.Adapt<TEntity>();
+                _db.Set<TEntity>().Add(entity);
+                await _db.SaveChangesAsync(); // Gem for at få ID
+
+                // Kør alle relation-synkroniseringer (fx både Fag og Lærere)
+                foreach (var sync in relationSyncs)
+                {
+                    await sync(entity);
+                }
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync(); // Godkend alt
+
+                var pkName = GetPrimaryKeyName<TEntity>();
+                var idValue = _db.Entry(entity).Property(pkName).CurrentValue;
+                return CreatedAtAction(actionName, new { id = idValue }, entity.Adapt<TDto>());
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); // Fortryd alt hvis noget fejler
+                _logger.LogError(ex, "Fejl under Create med relationer");
+                return BadRequest("Kunne ikke oprette objektet.");
+            }
+        }
+
+        // PUT
 
         // Opdateret UpdateAsync med IHasIdField interface check
         protected async Task<IActionResult> UpdateAsync<TEntity, TUpdateDto>(int id, TUpdateDto dto)
@@ -91,6 +130,8 @@ namespace InheritanceDemo.Controllers
         {
             if (id != dto.Id) return BadRequest("ID mismatch.");
 
+            using var transaction = await _db.Database.BeginTransactionAsync();
+
             var pkName = GetPrimaryKeyName<TEntity>();
             var entity = await _db.Set<TEntity>()
                 .Include(collectionSelector)
@@ -106,8 +147,58 @@ namespace InheritanceDemo.Controllers
                 await SynchronizeManyToManyAsync(currentCollection, newIds, keySelector);
             }
 
-            return await ExecuteDbActionAsync(async () => await _db.SaveChangesAsync());
+            //return await ExecuteDbActionAsync(async () => await _db.SaveChangesAsync());
+            await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return NoContent();
         }
+
+        protected async Task<IActionResult> UpdateWithMultipleRelationsAsync<TEntity, TUpdateDto>(
+            int id,
+            TUpdateDto dto,
+            params Func<TEntity, Task>[] relationSyncs)
+            where TEntity : class
+            where TUpdateDto : IHasIdField
+        {
+            // Sikkerhedscheck: ID i URL skal matche DTO
+            if (id != dto.Id) return BadRequest("ID mismatch.");
+
+            using var transaction = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                var pkName = GetPrimaryKeyName<TEntity>(); // Finder automatisk "Id", "FagId" osv.
+
+                // Vi henter entiteten. 
+                // Note: Her behøver vi ikke .Include() på forhånd, 
+                // da relationSyncs selv kan tilgå Collection Entries.
+                var entity = await _db.Set<TEntity>().FirstOrDefaultAsync(e => EF.Property<int>(e, pkName) == id);
+                if (entity == null) return NotFound();
+
+                // 1. Opdater simple felter (Navn, Alder, osv.) via Mapster
+                dto.Adapt(entity);
+
+                // 2. Kør alle mange-til-mange relation-synkroniseringer (Fag, Lærere, osv.)
+                foreach (var sync in relationSyncs)
+                {
+                    await sync(entity);
+                }
+
+                // 3. Gem og bekræft
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Fejl under Update med multiple relationer");
+                return BadRequest("Der opstod en fejl ved opdatering af relationerne.");
+            }
+        }
+
+        // DELETE
 
         protected async Task<IActionResult> DeleteAsync<TEntity>(int id) where TEntity : class
         {
@@ -117,6 +208,51 @@ namespace InheritanceDemo.Controllers
 
             _db.Set<TEntity>().Remove(entity);
             return await ExecuteDbActionAsync(async () => await _db.SaveChangesAsync());
+        }
+
+        protected async Task<IActionResult> DeleteWithRelationsAsync<TEntity>(
+            int id,
+            params Expression<Func<TEntity, IEnumerable<object>>>[] collectionsToClear)
+            where TEntity : class
+        {
+            using var transaction = await _db.Database.BeginTransactionAsync();
+            try
+            {
+                var pkName = GetPrimaryKeyName<TEntity>();
+                var entity = await _db.Set<TEntity>().FirstOrDefaultAsync(e => EF.Property<int>(e, pkName) == id);
+
+                if (entity == null) return NotFound();
+
+                // 1. Indlæs og ryd alle specificerede mange-til-mange relationer
+                foreach (var collectionSelector in collectionsToClear)
+                {
+                    var entry = _db.Entry(entity).Collection(collectionSelector);
+                    await entry.LoadAsync(); // Hent relationerne fra DB
+
+                    //if (entry.CurrentValue != null)
+                    //{
+                    //    entry.CurrentValue.Clear(); // Fjern alle links i bro-tabellen
+                    //}
+                    if (entry.CurrentValue is ICollection<object> collection)
+                    {
+                        collection.Clear(); // Fjern alle links i bro-tabellen
+                    }
+                }
+
+                // 2. Slet selve objektet
+                _db.Set<TEntity>().Remove(entity);
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Fejl under sletning af objekt med relationer");
+                return BadRequest("Kunne ikke slette objektet pga. afhængigheder.");
+            }
         }
 
         // --- INTERNE HJÆLPERE ---

@@ -45,6 +45,9 @@ namespace InheritanceDemo.Data
             modelBuilder.Entity<Student>()
                 .HasMany(s => s.Fag)
                 .WithMany(f => f.Studerende);
+
+            modelBuilder.Entity<Ansat>()
+                .Property(a => a.MaanedsLoen).HasPrecision(18, 2);
         }
     }
 }

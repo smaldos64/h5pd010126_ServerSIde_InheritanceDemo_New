@@ -1,4 +1,6 @@
-﻿using InheritanceDemo.DTOInterfaces;
+﻿using FluentValidation;
+using InheritanceDemo.DTOInterfaces;
+using InheritanceDemo.Models;
 
 namespace InheritanceDemo.DTOs
 {
@@ -22,5 +24,17 @@ namespace InheritanceDemo.DTOs
         public string HoldNavn { get; set; } = string.Empty;
         //public List<FagUpdateDto> Fag { get; set; } = new();
         public List<string> FagTitler { get; set; } = new();
+    }
+
+    public class StudentCreateDtoValidator : AbstractValidator<StudentCreateDto>
+    {
+        public StudentCreateDtoValidator()
+        {
+            // Validerer på relationen/listen
+            RuleFor(s => s.FagIds)
+                .NotEmpty().WithMessage("En studerende skal være tilmeldt mindst ét fag.")
+                //.Must(fagListe => fagListe.Count <= 3).WithMessage("En studerende kan højst have 3 fag.")
+                .Must(FagIds => FagIds.Count <= 3).WithMessage("En studerende kan højst have 3 fag.");
+        }
     }
 }

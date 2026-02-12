@@ -25,7 +25,8 @@ namespace InheritanceDemo.Mapping
 
             // 3. STUDENT: Håndtering af fladtrykning (HoldNavn) og ignorering af samlinger
             config.NewConfig<Student, StudentDto>()
-                .Map(dest => dest.HoldNavn, src => src.Hold != null ? src.Hold.HoldNavn : null);
+                .Map(dest => dest.HoldNavn, src => src.Hold != null ? src.Hold.HoldNavn : null)
+                .Map(dest => dest.FagTitler, src => src.Fag.Select(f => f.FagTitel));
 
             config.NewConfig<StudentUpdateDto, Student>()
                 .Ignore(dest => dest.Fag)  // Håndteres manuelt af SynchronizeManyToMany
@@ -35,22 +36,6 @@ namespace InheritanceDemo.Mapping
             config.NewConfig<Ansat, AnsatDto>()
                 .Map(dest => dest.AfdelingNavn, src => src.Afdeling != null ? src.Afdeling.AfdelingNavn : null);
 
-            // Gør konfigurationen global og "klar til brug"
-            //TypeAdapterConfig.GlobalSettings.Scan(System.Reflection.Assembly.GetExecutingAssembly());
-
-
-            // Gamle erklæringer herunder !!!
-            // --- STUDENT MAPPING ---
-            config.NewConfig<Student, StudentDto>()
-            .Inherits<Person, PersonDto>()
-            .Map(dest => dest.HoldNavn, src => src.Hold.HoldNavn)
-            .Map(dest => dest.FagTitler, src => src.Fag.Select(f => f.FagTitel));
-
-            // --- ANSAT MAPPING ---
-            config.NewConfig<Ansat, AnsatDto>()
-                .Inherits<Person, PersonDto>()
-                .Map(dest => dest.AfdelingNavn, src => src.Afdeling != null ? src.Afdeling.AfdelingNavn : null);
-
             // --- POLYMORFISK MAPPING (Til POST/PUT) ---
             // Dette sikrer, at hvis du sender en liste af PersonDto, 
             // så ved Mapster hvilken sub-type der skal oprettes.
@@ -58,10 +43,35 @@ namespace InheritanceDemo.Mapping
                 .Include<StudentDto, Student>()
                 .Include<AnsatDto, Ansat>();
 
+
+
+            // Gør konfigurationen global og "klar til brug"
+            //TypeAdapterConfig.GlobalSettings.Scan(System.Reflection.Assembly.GetExecutingAssembly());
+
+
+            // Gamle erklæringer herunder !!!
+            // --- STUDENT MAPPING ---
+            //config.NewConfig<Student, StudentDto>()
+            //.Inherits<Person, PersonDto>()
+            //.Map(dest => dest.HoldNavn, src => src.Hold.HoldNavn)
+            //.Map(dest => dest.FagTitler, src => src.Fag.Select(f => f.FagTitel));
+
+            // --- ANSAT MAPPING ---
+            //config.NewConfig<Ansat, AnsatDto>()
+            //    .Inherits<Person, PersonDto>()
+            //    .Map(dest => dest.AfdelingNavn, src => src.Afdeling != null ? src.Afdeling.AfdelingNavn : null);
+
+            // --- POLYMORFISK MAPPING (Til POST/PUT) ---
+            // Dette sikrer, at hvis du sender en liste af PersonDto, 
+            // så ved Mapster hvilken sub-type der skal oprettes.
+            //config.NewConfig<PersonDto, Person>()
+            //    .Include<StudentDto, Student>()
+            //    .Include<AnsatDto, Ansat>();
+
             // Mange-til-mange: Undgå at Mapster prøver at oprette nye Fag-objekter
             // når vi opdaterer en Student. Vi mapper kun ID'er.
-            config.NewConfig<StudentUpdateDto, Student>()
-                .Ignore(dest => dest.Fag); // Håndter fag manuelt i controlleren for fuld kontrol
+            //config.NewConfig<StudentUpdateDto, Student>()
+            //    .Ignore(dest => dest.Fag); // Håndter fag manuelt i controlleren for fuld kontrol
         }
 
         public static void RegisterGlobal()
