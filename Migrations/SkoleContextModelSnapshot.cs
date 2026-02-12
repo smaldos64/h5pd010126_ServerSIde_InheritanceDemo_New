@@ -168,7 +168,7 @@ namespace InheritanceDemo.Migrations
                     b.HasOne("InheritanceDemo.Models.Afdeling", "Afdeling")
                         .WithMany("Ansatte")
                         .HasForeignKey("AfdelingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Afdeling");
@@ -179,7 +179,7 @@ namespace InheritanceDemo.Migrations
                     b.HasOne("InheritanceDemo.Models.Hold", "Hold")
                         .WithMany("Studerende")
                         .HasForeignKey("HoldId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Hold");

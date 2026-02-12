@@ -48,6 +48,19 @@ namespace InheritanceDemo.Data
 
             modelBuilder.Entity<Ansat>()
                 .Property(a => a.MaanedsLoen).HasPrecision(18, 2);
+
+            // Vi ønsker IKKE Cascade delete på nogen af vores en-til-mange relationer
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.Hold)
+                .WithMany(h => h.Studerende)
+                .HasForeignKey(s => s.HoldId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Ansat>()
+                .HasOne(s => s.Afdeling)
+                .WithMany(a => a.Ansatte)
+                .HasForeignKey(s => s.AfdelingId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InheritanceDemo.Migrations
 {
     [DbContext(typeof(SkoleContext))]
-    [Migration("20260212121131_Init")]
-    partial class Init
+    [Migration("20260212202604_Init_TPH")]
+    partial class Init_TPH
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -171,7 +171,7 @@ namespace InheritanceDemo.Migrations
                     b.HasOne("InheritanceDemo.Models.Afdeling", "Afdeling")
                         .WithMany("Ansatte")
                         .HasForeignKey("AfdelingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Afdeling");
@@ -182,7 +182,7 @@ namespace InheritanceDemo.Migrations
                     b.HasOne("InheritanceDemo.Models.Hold", "Hold")
                         .WithMany("Studerende")
                         .HasForeignKey("HoldId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Hold");

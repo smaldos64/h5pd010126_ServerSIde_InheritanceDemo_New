@@ -210,7 +210,7 @@ namespace InheritanceDemo.Controllers
             return await ExecuteDbActionAsync(async () => await _db.SaveChangesAsync());
         }
 
-        protected async Task<IActionResult> DeleteWithRelationsAsync<TEntity>(
+        protected async Task<IActionResult> DeleteWithMultipleRelationsAsync<TEntity>(
             int id,
             params Expression<Func<TEntity, IEnumerable<object>>>[] collectionsToClear)
             where TEntity : class

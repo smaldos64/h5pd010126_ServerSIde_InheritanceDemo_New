@@ -5,7 +5,7 @@
 namespace InheritanceDemo.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Init_TPH : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -71,13 +71,13 @@ namespace InheritanceDemo.Migrations
                         column: x => x.AfdelingId,
                         principalTable: "Afdelinger",
                         principalColumn: "AfdelingId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Personer_Hold_HoldId",
                         column: x => x.HoldId,
                         principalTable: "Hold",
                         principalColumn: "HoldId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
