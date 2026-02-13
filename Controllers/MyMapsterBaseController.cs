@@ -32,7 +32,11 @@ namespace InheritanceDemo.Controllers
 
         protected async Task<ActionResult<IEnumerable<TDto>>> ProjectListAsync<TEntity, TDto>(
             IQueryable<TEntity> query) where TEntity : class
-            => Ok(await query.AsNoTracking().ProjectToType<TDto>().ToListAsync());
+        {
+            var listTest = await query.AsNoTracking().ProjectToType<TDto>().ToListAsync();
+            return (Ok(await query.AsNoTracking().ProjectToType<TDto>().ToListAsync()));
+        }
+           // => Ok(await query.AsNoTracking().ProjectToType<TDto>().ToListAsync());
 
         protected async Task<ActionResult<TDto>> ProjectSingleAsync<TEntity, TDto>(
             IQueryable<TEntity> query) where TEntity : class
@@ -102,10 +106,10 @@ namespace InheritanceDemo.Controllers
         // Opdateret UpdateAsync med IHasIdField interface check
         protected async Task<IActionResult> UpdateAsync<TEntity, TUpdateDto>(int id, TUpdateDto dto)
             where TEntity : class
-            where TUpdateDto : IHasIdField
+            //where TUpdateDto : IHasIdField
         {
             // Sikkerhed: Tjek om ID i URL matcher ID i DTO (selvom DTO feltet hedder .Id)
-            if (id != dto.Id) return BadRequest("ID mismatch mellem URL og krop.");
+            //if (id != dto.Id) return BadRequest("ID mismatch mellem URL og krop.");
 
             var pkName = GetPrimaryKeyName<TEntity>();
             var entity = await _db.Set<TEntity>().FirstOrDefaultAsync(e => EF.Property<int>(e, pkName) == id);
@@ -126,9 +130,9 @@ namespace InheritanceDemo.Controllers
             where TEntity : class 
             where TRelatedEntity : class 
             where TKey : notnull
-            where TUpdateDto : IHasIdField
+            //where TUpdateDto : IHasIdField
         {
-            if (id != dto.Id) return BadRequest("ID mismatch.");
+            //if (id != dto.Id) return BadRequest("ID mismatch.");
 
             using var transaction = await _db.Database.BeginTransactionAsync();
 
@@ -159,10 +163,10 @@ namespace InheritanceDemo.Controllers
             TUpdateDto dto,
             params Func<TEntity, Task>[] relationSyncs)
             where TEntity : class
-            where TUpdateDto : IHasIdField
+            //where TUpdateDto : IHasIdField
         {
             // Sikkerhedscheck: ID i URL skal matche DTO
-            if (id != dto.Id) return BadRequest("ID mismatch.");
+            //if (id != dto.Id) return BadRequest("ID mismatch.");
 
             using var transaction = await _db.Database.BeginTransactionAsync();
             try

@@ -18,12 +18,20 @@ namespace InheritanceDemo.DTOs
         public int Id { get; set; }
     }
 
+    public class StudentDtoWithHold : PersonDto
+    {
+        public HoldUpdateDto? Hold { get; set; }
+    }
+
+    public class StudentDtoWithFag : PersonDto
+    {
+        public List<FagUpdateDto> Fag { get; set; }
+    }
+
     public class StudentDto : PersonDto
     {
-        public int HoldId { get; set; }
-        public string HoldNavn { get; set; } = string.Empty;
-        //public List<FagUpdateDto> Fag { get; set; } = new();
-        public List<string> FagTitler { get; set; } = new();
+        public HoldUpdateDto? Hold { get; set; }
+        public List<FagUpdateDto>? Fag { get; set; }
     }
 
     public class StudentCreateDtoValidator : AbstractValidator<StudentCreateDto>

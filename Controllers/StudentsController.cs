@@ -9,9 +9,9 @@ namespace InheritanceDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentController : MyMapsterBaseController<StudentController, SkoleContext>
+    public class StudentsController : MyMapsterBaseController<StudentsController, SkoleContext>
     {
-        public StudentController(SkoleContext db, ILogger<StudentController> logger)
+        public StudentsController(SkoleContext db, ILogger<StudentsController> logger)
             : base(db, logger)
         {
         }

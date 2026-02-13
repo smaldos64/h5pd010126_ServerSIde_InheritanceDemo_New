@@ -21,7 +21,8 @@ namespace InheritanceDemo.DTOs
     public class AnsatDto : PersonDto
     {
         public decimal MaanedsLoen { get; set; }
-        public string AfdelingNavn { get; set; } = String.Empty;
+        //public string AfdelingNavn { get; set; } = String.Empty;
+        public AfdelingUpdateDto Afdeling { get; set; } = new AfdelingUpdateDto();
         // Mapster flader denne ud fra Afdeling.Navn
     }
 

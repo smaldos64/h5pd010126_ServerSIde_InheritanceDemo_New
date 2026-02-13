@@ -10,31 +10,43 @@ namespace InheritanceDemo.Mapping
         public static void Register(TypeAdapterConfig config)
         {
             // 1. FAG: Map DTO.Id til Entity.FagId og omvendt
-            config.NewConfig<Fag, FagDto>()
-                .Map(dest => dest.Id, src => src.FagId);
+            //config.NewConfig<Fag, FagDto>()
+            //    .Map(dest => dest.Id, src => src.FagId);
 
-            config.NewConfig<FagDto, Fag>()
-                .Map(dest => dest.FagId, src => src.Id);
+            //config.NewConfig<FagDto, Fag>()
+            //    .Map(dest => dest.FagId, src => src.Id);
 
             // 2. HOLD: Map DTO.Id til Entity.HoldId og omvendt
-            config.NewConfig<Hold, HoldDto>()
-                .Map(dest => dest.Id, src => src.HoldId);
+            //config.NewConfig<Hold, HoldDto>()
+            //    .Map(dest => dest.Id, src => src.HoldId);
 
-            config.NewConfig<HoldDto, Hold>()
-                .Map(dest => dest.HoldId, src => src.Id);
+            //config.NewConfig<HoldDto, Hold>()
+            //    .Map(dest => dest.HoldId, src => src.Id);
 
             // 3. STUDENT: Håndtering af fladtrykning (HoldNavn) og ignorering af samlinger
-            config.NewConfig<Student, StudentDto>()
-                .Map(dest => dest.HoldNavn, src => src.Hold != null ? src.Hold.HoldNavn : null)
-                .Map(dest => dest.FagTitler, src => src.Fag.Select(f => f.FagTitel));
+            //config.NewConfig<Student, StudentDto>()
+            //    .Map(dest => dest.HoldNavn, src => src.Hold != null ? src.Hold.HoldNavn : null)
+            //    .Map(dest => dest.FagTitler, src => src.Fag.Select(f => f.FagTitel));
 
-            config.NewConfig<StudentUpdateDto, Student>()
-                .Ignore(dest => dest.Fag)  // Håndteres manuelt af SynchronizeManyToMany
-                .Ignore(dest => dest.Hold); // Vi vil typisk kun opdatere HoldId (int)
+            //config.NewConfig<StudentUpdateDto, Student>()
+            //    .Ignore(dest => dest.Fag)  // Håndteres manuelt af SynchronizeManyToMany
+            //    .Ignore(dest => dest.Hold); // Vi vil typisk kun opdatere HoldId (int)
 
             // 4. ANSAT: Fladtrykning af AfdelingNavn
-            config.NewConfig<Ansat, AnsatDto>()
-                .Map(dest => dest.AfdelingNavn, src => src.Afdeling != null ? src.Afdeling.AfdelingNavn : null);
+            //config.NewConfig<Ansat, AnsatDto>()
+            //    .Map(dest => dest.AfdelingNavn, src => src.Afdeling != null ? src.Afdeling.AfdelingNavn : null);
+            //config.NewConfig<AnsatDto, Ansat>()
+            //    .Map(dest => dest.AfdelingId, src => src.Id);
+
+            //config.NewConfig<Ansat, AnsatDto>()
+            //    .Map(dest => dest.Id, src => src.AfdelingId);
+
+            // 5. AFDELING
+            //config.NewConfig<Afdeling, AfdelingDto>()
+            //    .Map(dest => dest.Id, src => src.AfdelingId);
+
+            //config.NewConfig<AfdelingDto, Afdeling>()
+            //    .Map(dest => dest.AfdelingId, src => src.Id);
 
             // --- POLYMORFISK MAPPING (Til POST/PUT) ---
             // Dette sikrer, at hvis du sender en liste af PersonDto, 

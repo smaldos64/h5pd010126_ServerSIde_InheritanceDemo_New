@@ -7,14 +7,13 @@ namespace InheritanceDemo.DTOs
         public string? HoldNavn { get; set; }
     }
 
-    public class HoldUpdateDto : HoldCreateDto, IHasIdField
+    public class HoldUpdateDto : HoldCreateDto
     {
-        public int Id { get; set; }
+        public int HoldId { get; set; }
     }
 
     public class HoldDto : HoldUpdateDto
     {
-        public List<StudentDto>? Studerende { get; set; }
+        public List<StudentDtoWithFag>? Studerende { get; set; }
     }
-    
 }

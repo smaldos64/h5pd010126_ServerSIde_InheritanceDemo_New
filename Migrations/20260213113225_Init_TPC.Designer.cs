@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InheritanceDemo.Migrations
 {
     [DbContext(typeof(SkoleContext))]
-    [Migration("20260212202604_Init_TPH")]
-    partial class Init_TPH
+    [Migration("20260213113225_Init_TPC")]
+    partial class Init_TPC
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,10 @@ namespace InheritanceDemo.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.HasSequence("AnsatSequence");
+
+            modelBuilder.HasSequence("StudentSequence");
 
             modelBuilder.Entity("FagStudent", b =>
                 {
@@ -54,6 +58,42 @@ namespace InheritanceDemo.Migrations
                     b.HasKey("AfdelingId");
 
                     b.ToTable("Afdelinger");
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.Ansat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR [AnsatSequence]");
+
+                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+
+                    b.Property<int>("AfdelingId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Alder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("MaanedsLoen")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Navn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AfdelingId");
+
+                    b.ToTable("Ansatte");
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("InheritanceDemo.Models.Fag", b =>
@@ -90,13 +130,14 @@ namespace InheritanceDemo.Migrations
                     b.ToTable("Hold");
                 });
 
-            modelBuilder.Entity("InheritanceDemo.Models.Person", b =>
+            modelBuilder.Entity("InheritanceDemo.Models.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR [StudentSequence]");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
 
                     b.Property<int>("Alder")
                         .HasColumnType("int");
@@ -105,50 +146,20 @@ namespace InheritanceDemo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("HoldId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Navn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PersonType")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
                     b.HasKey("Id");
-
-                    b.ToTable("Personer");
-
-                    b.HasDiscriminator<string>("PersonType").HasValue("Person");
-
-                    b.UseTphMappingStrategy();
-                });
-
-            modelBuilder.Entity("InheritanceDemo.Models.Ansat", b =>
-                {
-                    b.HasBaseType("InheritanceDemo.Models.Person");
-
-                    b.Property<int>("AfdelingId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("MaanedsLoen")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasIndex("AfdelingId");
-
-                    b.HasDiscriminator().HasValue("Ansat");
-                });
-
-            modelBuilder.Entity("InheritanceDemo.Models.Student", b =>
-                {
-                    b.HasBaseType("InheritanceDemo.Models.Person");
-
-                    b.Property<int>("HoldId")
-                        .HasColumnType("int");
 
                     b.HasIndex("HoldId");
 
-                    b.HasDiscriminator().HasValue("Student");
+                    b.ToTable("Studerende");
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("FagStudent", b =>

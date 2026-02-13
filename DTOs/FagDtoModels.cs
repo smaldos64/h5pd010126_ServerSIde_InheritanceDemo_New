@@ -8,13 +8,13 @@ namespace InheritanceDemo.DTOs
         public string? FagTitel { get; set; }
     }
 
-    public class FagUpdateDto : FagCreateDto, IHasIdField
+    public class FagUpdateDto : FagCreateDto
     {
-        public int Id { get; set; }
+        public int FagId { get; set; }
     }
 
     public class FagDto : FagUpdateDto
     {
-        public List<StudentDto>? Studerende { get; set; }
+        public List<StudentDtoWithHold>? Studerende { get; set; }
     }
 }
