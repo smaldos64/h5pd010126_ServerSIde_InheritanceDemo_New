@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InheritanceDemo.Migrations
 {
     [DbContext(typeof(SkoleContext))]
-    [Migration("20260213113225_Init_TPC")]
-    partial class Init_TPC
+    [Migration("20260217121643_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,9 +24,20 @@ namespace InheritanceDemo.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.HasSequence("AnsatSequence");
+            modelBuilder.Entity("AfdelingTeacher", b =>
+                {
+                    b.Property<int>("AfdelingerAfdelingId")
+                        .HasColumnType("int");
 
-            modelBuilder.HasSequence("StudentSequence");
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AfdelingerAfdelingId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("TeacherAfdeling", (string)null);
+                });
 
             modelBuilder.Entity("FagStudent", b =>
                 {
@@ -41,6 +52,21 @@ namespace InheritanceDemo.Migrations
                     b.HasIndex("StuderendeId");
 
                     b.ToTable("FagStudent");
+                });
+
+            modelBuilder.Entity("FagTeacher", b =>
+                {
+                    b.Property<int>("FagId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("FagId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("TeacherFag", (string)null);
                 });
 
             modelBuilder.Entity("InheritanceDemo.Models.Afdeling", b =>
@@ -58,42 +84,6 @@ namespace InheritanceDemo.Migrations
                     b.HasKey("AfdelingId");
 
                     b.ToTable("Afdelinger");
-                });
-
-            modelBuilder.Entity("InheritanceDemo.Models.Ansat", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("NEXT VALUE FOR [AnsatSequence]");
-
-                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
-
-                    b.Property<int>("AfdelingId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Alder")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("MaanedsLoen")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Navn")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AfdelingId");
-
-                    b.ToTable("Ansatte");
-
-                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("InheritanceDemo.Models.Fag", b =>
@@ -130,14 +120,13 @@ namespace InheritanceDemo.Migrations
                     b.ToTable("Hold");
                 });
 
-            modelBuilder.Entity("InheritanceDemo.Models.Student", b =>
+            modelBuilder.Entity("InheritanceDemo.Models.Person", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValueSql("NEXT VALUE FOR [StudentSequence]");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Alder")
                         .HasColumnType("int");
@@ -146,20 +135,65 @@ namespace InheritanceDemo.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HoldId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Navn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.ToTable("Personer", (string)null);
+
+                    b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.Ansat", b =>
+                {
+                    b.HasBaseType("InheritanceDemo.Models.Person");
+
+                    b.Property<int>("AfdelingId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MaanedsLoen")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasIndex("AfdelingId");
+
+                    b.ToTable("Ansatte", (string)null);
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.Student", b =>
+                {
+                    b.HasBaseType("InheritanceDemo.Models.Person");
+
+                    b.Property<int>("HoldId")
+                        .HasColumnType("int");
+
                     b.HasIndex("HoldId");
 
-                    b.ToTable("Studerende");
+                    b.ToTable("Studerende", (string)null);
+                });
 
-                    b.UseTpcMappingStrategy();
+            modelBuilder.Entity("InheritanceDemo.Models.Teacher", b =>
+                {
+                    b.HasBaseType("InheritanceDemo.Models.Person");
+
+                    b.ToTable("Teachers", (string)null);
+                });
+
+            modelBuilder.Entity("AfdelingTeacher", b =>
+                {
+                    b.HasOne("InheritanceDemo.Models.Afdeling", null)
+                        .WithMany()
+                        .HasForeignKey("AfdelingerAfdelingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InheritanceDemo.Models.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FagStudent", b =>
@@ -177,12 +211,33 @@ namespace InheritanceDemo.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FagTeacher", b =>
+                {
+                    b.HasOne("InheritanceDemo.Models.Fag", null)
+                        .WithMany()
+                        .HasForeignKey("FagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InheritanceDemo.Models.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("InheritanceDemo.Models.Ansat", b =>
                 {
                     b.HasOne("InheritanceDemo.Models.Afdeling", "Afdeling")
                         .WithMany("Ansatte")
                         .HasForeignKey("AfdelingId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InheritanceDemo.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("InheritanceDemo.Models.Ansat", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Afdeling");
@@ -196,7 +251,22 @@ namespace InheritanceDemo.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("InheritanceDemo.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("InheritanceDemo.Models.Student", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Hold");
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.Teacher", b =>
+                {
+                    b.HasOne("InheritanceDemo.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("InheritanceDemo.Models.Teacher", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("InheritanceDemo.Models.Afdeling", b =>

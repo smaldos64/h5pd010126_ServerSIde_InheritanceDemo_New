@@ -76,36 +76,7 @@ namespace InheritanceDemo.Controllers
         }
 
         [HttpPut("UpdateWithMultipleRelations/{id}")]
-        //public async Task<IActionResult> UpdateWithMultipleRelations(int id, StudentUpdateDto dto)
-        //{
-        //    return await UpdateWithMultipleRelationsAsync<Student, StudentUpdateDto>(
-        //        id,
-        //        dto,
-        //        // Opgave 1: Synkronisér Fag
-        //        async (student) =>
-        //        {
-        //            var collection = _db.Entry(student).Collection(s => s.Fag).CurrentValue as ICollection<Fag>;
-        //            if (collection == null)
-        //            {
-        //                await _db.Entry(student).Collection(s => s.Fag).LoadAsync();
-        //                collection = student.Fag;
-        //            }
-        //            await SynchronizeManyToManyAsync(collection, dto.FagIds, f => f.FagId);
-        //        }
-        //        //// Opgave 2: Synkronisér Lærere
-        //        //async (student) => {
-        //        //    var collection = _db.Entry(student).Collection(s => s.Laerere).CurrentValue;
-        //        //    if (collection == null)
-        //        //    {
-        //        //        await _db.Entry(student).Collection(s => s.Laerere).LoadAsync();
-        //        //        collection = student.Laerere;
-        //        //    }
-        //        //    await SynchronizeManyToManyAsync(collection, dto.LaererIds, l => l.Id);
-        //        //}
-        //    );
-        //}
-
-        [HttpPut("{id}")]
+       
         public async Task<IActionResult> UpdateWithMultipleRelations(int id, StudentUpdateDto dto)
         {
             return await UpdateWithMultipleRelationsAsync<Student, StudentUpdateDto>(
@@ -145,8 +116,6 @@ namespace InheritanceDemo.Controllers
                 //}
             );
         }
-
-
 
         // 6. Slet (Delete)
         [HttpDelete("DeleteSimpleObject/{id}")]

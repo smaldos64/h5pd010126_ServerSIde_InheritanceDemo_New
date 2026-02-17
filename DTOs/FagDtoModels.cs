@@ -15,6 +15,6 @@ namespace InheritanceDemo.DTOs
 
     public class FagDto : FagUpdateDto
     {
-        public List<StudentDtoWithHold>? Studerende { get; set; }
+        public List<StudentWithHoldDto>? Studerende { get; set; }
     }
 }

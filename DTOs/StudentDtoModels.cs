@@ -18,12 +18,12 @@ namespace InheritanceDemo.DTOs
         public int Id { get; set; }
     }
 
-    public class StudentDtoWithHold : PersonDto
+    public class StudentWithHoldDto : PersonDto
     {
         public HoldUpdateDto? Hold { get; set; }
     }
 
-    public class StudentDtoWithFag : PersonDto
+    public class StudentWithFagDto : PersonDto
     {
         public List<FagUpdateDto> Fag { get; set; }
     }

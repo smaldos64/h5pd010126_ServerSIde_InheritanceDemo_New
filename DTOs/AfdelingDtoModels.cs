@@ -7,7 +7,6 @@ namespace InheritanceDemo.DTOs
         public string AfdelingNavn { get; set; } = string.Empty;
     }
 
-    //public class AfdelingUpdateDto : AfdelingCreateDto, IHasIdField
     public class AfdelingUpdateDto : AfdelingCreateDto
     {
         public int AfdelingId { get; set; }

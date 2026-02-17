@@ -14,6 +14,6 @@ namespace InheritanceDemo.DTOs
 
     public class HoldDto : HoldUpdateDto
     {
-        public List<StudentDtoWithFag>? Studerende { get; set; }
+        public List<StudentWithFagDto>? Studerende { get; set; }
     }
 }

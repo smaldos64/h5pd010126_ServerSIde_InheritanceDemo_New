@@ -5,17 +5,11 @@
 namespace InheritanceDemo.Migrations
 {
     /// <inheritdoc />
-    public partial class Init_TPC : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateSequence(
-                name: "AnsatSequence");
-
-            migrationBuilder.CreateSequence(
-                name: "StudentSequence");
-
             migrationBuilder.CreateTable(
                 name: "Afdelinger",
                 columns: table => new
@@ -56,15 +50,27 @@ namespace InheritanceDemo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ansatte",
+                name: "Personer",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR [AnsatSequence]"),
-                    MaanedsLoen = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    AfdelingId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Navn = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Alder = table.Column<int>(type: "int", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Personer", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ansatte",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    MaanedsLoen = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    AfdelingId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,17 +81,20 @@ namespace InheritanceDemo.Migrations
                         principalTable: "Afdelinger",
                         principalColumn: "AfdelingId",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ansatte_Personer_Id",
+                        column: x => x.Id,
+                        principalTable: "Personer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Studerende",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR [StudentSequence]"),
-                    HoldId = table.Column<int>(type: "int", nullable: false),
-                    Navn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Alder = table.Column<int>(type: "int", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    HoldId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,6 +105,29 @@ namespace InheritanceDemo.Migrations
                         principalTable: "Hold",
                         principalColumn: "HoldId",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Studerende_Personer_Id",
+                        column: x => x.Id,
+                        principalTable: "Personer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teachers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teachers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teachers_Personer_Id",
+                        column: x => x.Id,
+                        principalTable: "Personer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -122,6 +154,54 @@ namespace InheritanceDemo.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TeacherAfdeling",
+                columns: table => new
+                {
+                    AfdelingerAfdelingId = table.Column<int>(type: "int", nullable: false),
+                    TeachersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeacherAfdeling", x => new { x.AfdelingerAfdelingId, x.TeachersId });
+                    table.ForeignKey(
+                        name: "FK_TeacherAfdeling_Afdelinger_AfdelingerAfdelingId",
+                        column: x => x.AfdelingerAfdelingId,
+                        principalTable: "Afdelinger",
+                        principalColumn: "AfdelingId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeacherAfdeling_Teachers_TeachersId",
+                        column: x => x.TeachersId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeacherFag",
+                columns: table => new
+                {
+                    FagId = table.Column<int>(type: "int", nullable: false),
+                    TeachersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeacherFag", x => new { x.FagId, x.TeachersId });
+                    table.ForeignKey(
+                        name: "FK_TeacherFag_Fag_FagId",
+                        column: x => x.FagId,
+                        principalTable: "Fag",
+                        principalColumn: "FagId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeacherFag_Teachers_TeachersId",
+                        column: x => x.TeachersId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Ansatte_AfdelingId",
                 table: "Ansatte",
@@ -136,6 +216,16 @@ namespace InheritanceDemo.Migrations
                 name: "IX_Studerende_HoldId",
                 table: "Studerende",
                 column: "HoldId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeacherAfdeling_TeachersId",
+                table: "TeacherAfdeling",
+                column: "TeachersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeacherFag_TeachersId",
+                table: "TeacherFag",
+                column: "TeachersId");
         }
 
         /// <inheritdoc />
@@ -148,22 +238,28 @@ namespace InheritanceDemo.Migrations
                 name: "FagStudent");
 
             migrationBuilder.DropTable(
+                name: "TeacherAfdeling");
+
+            migrationBuilder.DropTable(
+                name: "TeacherFag");
+
+            migrationBuilder.DropTable(
+                name: "Studerende");
+
+            migrationBuilder.DropTable(
                 name: "Afdelinger");
 
             migrationBuilder.DropTable(
                 name: "Fag");
 
             migrationBuilder.DropTable(
-                name: "Studerende");
+                name: "Teachers");
 
             migrationBuilder.DropTable(
                 name: "Hold");
 
-            migrationBuilder.DropSequence(
-                name: "AnsatSequence");
-
-            migrationBuilder.DropSequence(
-                name: "StudentSequence");
+            migrationBuilder.DropTable(
+                name: "Personer");
         }
     }
 }

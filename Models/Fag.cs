@@ -5,5 +5,6 @@
         public int FagId { get; set; }
         public string FagTitel { get; set; } = string.Empty;
         public List<Student> Studerende { get; set; } = new();
+        public List<Teacher> Teachers { get; set; } = new();
     }
 }
