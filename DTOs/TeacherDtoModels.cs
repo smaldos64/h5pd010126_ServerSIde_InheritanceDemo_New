@@ -2,7 +2,7 @@
 
 namespace InheritanceDemo.DTOs
 {
-    public class TeacherCreateDto
+    public class TeacherCreateDto : PersonCreateDto
     {
         public List<int> FagIds { get; set; } = new();
 

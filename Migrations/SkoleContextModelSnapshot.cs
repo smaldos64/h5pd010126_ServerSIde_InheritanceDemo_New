@@ -178,6 +178,27 @@ namespace InheritanceDemo.Migrations
                     b.ToTable("Teachers", (string)null);
                 });
 
+            modelBuilder.Entity("InheritanceDemo.Models.EUDStudent", b =>
+                {
+                    b.HasBaseType("InheritanceDemo.Models.Student");
+
+                    b.Property<string>("Laereplads")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("EUDStuderende", (string)null);
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.EUXStudent", b =>
+                {
+                    b.HasBaseType("InheritanceDemo.Models.Student");
+
+                    b.Property<int>("Uddannelseslaengde")
+                        .HasColumnType("int");
+
+                    b.ToTable("EUXStuderende", (string)null);
+                });
+
             modelBuilder.Entity("AfdelingTeacher", b =>
                 {
                     b.HasOne("InheritanceDemo.Models.Afdeling", null)
@@ -262,6 +283,24 @@ namespace InheritanceDemo.Migrations
                     b.HasOne("InheritanceDemo.Models.Person", null)
                         .WithOne()
                         .HasForeignKey("InheritanceDemo.Models.Teacher", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.EUDStudent", b =>
+                {
+                    b.HasOne("InheritanceDemo.Models.Student", null)
+                        .WithOne()
+                        .HasForeignKey("InheritanceDemo.Models.EUDStudent", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("InheritanceDemo.Models.EUXStudent", b =>
+                {
+                    b.HasOne("InheritanceDemo.Models.Student", null)
+                        .WithOne()
+                        .HasForeignKey("InheritanceDemo.Models.EUXStudent", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

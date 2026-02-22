@@ -26,14 +26,14 @@ namespace InheritanceDemo.Controllers
             => await GetByIdAsync<Teacher, TeacherDto>(id);
 
         // 3. Søg efter en specificeret query (GetFiltered)
-        // Eksempel: Find studerende med et specifikt navn eller over en vis alder
+        // Eksempel: Find lærere med et specifikt navn eller over en vis alder
         [HttpGet("search")]
         public async Task<ActionResult<IEnumerable<TeacherDto>>> Search(string navn)
             => await GetFilteredAsync<Teacher, TeacherDto>(t => t.Afdelinger.Any(f => f.AfdelingNavn.Contains(navn)));
 
         // 4. Opret (Create)
-        [HttpPost("CreateTeacherWithMultipleRelations")]
-        public async Task<ActionResult<TeacherDto>> CreateTeacherWithMultipleRelations(TeacherCreateDto dto)
+        [HttpPost("CreateWithMultipleRelations")]
+        public async Task<ActionResult<TeacherDto>> CreateWithMultipleRelations(TeacherCreateDto dto)
         {
             return await CreateWithMultipleRelationsAsync<Teacher, TeacherCreateDto, TeacherDto>(
                 dto,
@@ -98,7 +98,7 @@ namespace InheritanceDemo.Controllers
 
         // 6. Slet (Delete)
         [HttpDelete("DeleteObjectWithMultipleRelations/{id}")]
-        public async Task<IActionResult> DeleteObjectWithMultipleRelations(int id)
+        public async Task<IActionResult> DeleteWithMultipleRelations(int id)
         {
             // Vi beder basen om at rydde op i Fag og Laerere samlingerne før sletning
             return await DeleteWithMultipleRelationsAsync<Teacher>(id,

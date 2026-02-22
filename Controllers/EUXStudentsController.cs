@@ -3,44 +3,43 @@ using InheritanceDemo.DTOs;
 using InheritanceDemo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace InheritanceDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentsController : MyMapsterBaseController<StudentsController, SkoleContext>
+    public class EUXStudentsController : MyMapsterBaseController<EUXStudentsController, SkoleContext>
     {
-        public StudentsController(SkoleContext db, ILogger<StudentsController> logger)
+        public EUXStudentsController(SkoleContext db, ILogger<EUXStudentsController> logger)
             : base(db, logger)
         {
         }
 
         // 1. Hent alle (GetAll)
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StudentDto>>> GetAll()
-            => await ProjectListAsync<Student, StudentDto>(_db.Studerende);
+        public async Task<ActionResult<IEnumerable<EUXStudentDto>>> GetAll()
+            => await ProjectListAsync<EUXStudent, EUXStudentDto>(_db.EUXStuderende);
 
         // 2. Hent én baseret på Primary Key (den skudsikre GetByIdAsync)
         [HttpGet("{id}")]
-        public async Task<ActionResult<StudentDto>> Get(int id)
-            => await GetByIdAsync<Student, StudentDto>(id);
+        public async Task<ActionResult<EUXStudentDto>> Get(int id)
+            => await GetByIdAsync<EUXStudent, EUXStudentDto>(id);
 
         // 3. Søg efter en specificeret query (GetFiltered)
         // Eksempel: Find studerende med et specifikt navn eller over en vis alder
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<StudentDto>>> Search(string navn)
-            => await GetFilteredAsync<Student, StudentDto>(s => s.Navn.Contains(navn));
+        public async Task<ActionResult<IEnumerable<EUXStudentDto>>> Search(string navn)
+            => await GetFilteredAsync<EUXStudent, EUXStudentDto>(s => s.Navn.Contains(navn));
 
         // 4. Opret (Create)
         [HttpPost("Create")]
-        public async Task<ActionResult<StudentDto>> Create(StudentCreateDto dto)
-            => await CreateAsync<Student, StudentCreateDto, StudentDto>(dto, nameof(Get));
+        public async Task<ActionResult<EUXStudentDto>> Create(EUXStudentCreateDto dto)
+            => await CreateAsync<EUXStudent, EUXStudentCreateDto, EUXStudentDto>(dto, nameof(Get));
 
         [HttpPost("CreateWithMultipleRelations")]
-        public async Task<ActionResult<StudentDto>> CreateWithMultipleRelations(StudentCreateDto dto)
+        public async Task<ActionResult<EUXStudentDto>> CreateWithMultipleRelations(EUXStudentCreateDto dto)
         {
-            return await CreateWithMultipleRelationsAsync<Student, StudentCreateDto, StudentDto>(
+            return await CreateWithMultipleRelationsAsync<EUXStudent, EUXStudentCreateDto, EUXStudentDto>(
             dto,
             nameof(Get),
             // Relation 1: Fag
@@ -54,23 +53,7 @@ namespace InheritanceDemo.Controllers
 
 
         // 5. Opdater (Update) - Inkluderer håndtering af mange-til-mange relation til Fag
-        [HttpPut("UpdateWithRelations/{id}")]
-        public async Task<IActionResult> UpdateWithRelations(int id, StudentUpdateDto dto)
-        {
-            // Vi bruger den avancerede base-metode til at synkronisere 'Fag'
-            // s.Fag er navnet på listen i din Student-entitet
-            // dto.FagIds er listen med ID'er fra din DTO
-            // f.FagId er navnet på nøglen i Fag-entiteten
-            return await UpdateWithRelationsAsync<Student, StudentUpdateDto, Fag, int>(
-                id,
-                dto,
-                s => s.Fag,
-                dto.FagIds,
-                f => f.FagId);
-        }
-
         [HttpPut("UpdateWithMultipleRelations/{id}")]
-       
         public async Task<IActionResult> UpdateWithMultipleRelations(int id, StudentUpdateDto dto)
         {
             return await UpdateWithMultipleRelationsAsync<Student, StudentUpdateDto>(
@@ -101,15 +84,11 @@ namespace InheritanceDemo.Controllers
         }
 
         // 6. Slet (Delete)
-        [HttpDelete("DeleteSimpleObject/{id}")]
-        public async Task<IActionResult> DeleteSimpleObject(int id)
-            => await DeleteAsync<Student>(id);
-
         [HttpDelete("DeleteObjectWithMultipleRelations/{id}")]
         public async Task<IActionResult> DeleteObjectWithMultipleRelations(int id)
         {
             // Vi beder basen om at rydde op i Fag og Laerere samlingerne før sletning
-            return await DeleteWithMultipleRelationsAsync<Student>(id,
+            return await DeleteWithMultipleRelationsAsync<EUXStudent>(id,
                 s => s.Fag
             );
         }

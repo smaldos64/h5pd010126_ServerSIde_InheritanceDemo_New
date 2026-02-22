@@ -13,9 +13,15 @@ namespace InheritanceDemo.Mapping
             // Dette sikrer, at hvis du sender en liste af PersonDto, 
             // så ved Mapster hvilken sub-type der skal oprettes.
             config.NewConfig<PersonDto, Person>()
-                .Include<StudentDto, Student>()
+                //.Include<StudentDto, Student>()
+                //.Include<EUXStudentDto, EUXStudent>()
+                //.Include<EUDStudentDto, EUDStudent>()
                 .Include<AnsatDto, Ansat>()
                 .Include<TeacherDto, Teacher>();
+
+            config.NewConfig<Student, StudentDto>()
+               .Map(dest => dest.Hold.HoldId, src => src.HoldId)
+               .Map(dest => dest.Hold.HoldNavn, src => src.Hold.HoldNavn);
         }
 
         public static void RegisterGlobal()

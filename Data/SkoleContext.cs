@@ -16,6 +16,8 @@ namespace InheritanceDemo.Data
         public DbSet<Fag> Fag { get; set; }
         public DbSet<Afdeling> Afdelinger { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<EUXStudent> EUXStuderende { get; set; }
+        public DbSet<EUDStudent> EUDStuderende { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +35,8 @@ namespace InheritanceDemo.Data
             modelBuilder.Entity<Student>().ToTable("Studerende");
             modelBuilder.Entity<Ansat>().ToTable("Ansatte");
             modelBuilder.Entity<Teacher>().ToTable("Teachers");
+            modelBuilder.Entity<EUXStudent>().ToTable("EUXStuderende");
+            modelBuilder.Entity<EUDStudent>().ToTable("EUDStuderende");
 
 
             // --- MULIGHED 3: Table Per Concrete Type (TPC) ---

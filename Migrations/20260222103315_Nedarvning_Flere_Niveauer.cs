@@ -5,7 +5,7 @@
 namespace InheritanceDemo.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Nedarvning_Flere_Niveauer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -131,6 +131,42 @@ namespace InheritanceDemo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EUDStuderende",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Laereplads = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EUDStuderende", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EUDStuderende_Studerende_Id",
+                        column: x => x.Id,
+                        principalTable: "Studerende",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EUXStuderende",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Uddannelseslaengde = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EUXStuderende", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EUXStuderende_Studerende_Id",
+                        column: x => x.Id,
+                        principalTable: "Studerende",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "FagStudent",
                 columns: table => new
                 {
@@ -233,6 +269,12 @@ namespace InheritanceDemo.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Ansatte");
+
+            migrationBuilder.DropTable(
+                name: "EUDStuderende");
+
+            migrationBuilder.DropTable(
+                name: "EUXStuderende");
 
             migrationBuilder.DropTable(
                 name: "FagStudent");

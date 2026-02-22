@@ -25,7 +25,7 @@ namespace InheritanceDemo.Controllers
         protected async Task<ActionResult<TDto>> GetByIdAsync<TEntity, TDto>(int id) where TEntity : class
         {
             var pkName = GetPrimaryKeyName<TEntity>();
-            // Her bruger vi dynamisk PK navn fra EF Metadata - virker både med "Id" og "FagId"
+            // Her bruger vi dynamisk PK navn fra EF Metadata - virker både med "Id" og " andre Id felt benævnelser"
             var query = _db.Set<TEntity>().Where(e => EF.Property<int>(e, pkName) == id);
             return await ProjectSingleAsync<TEntity, TDto>(query);
         }
@@ -36,7 +36,6 @@ namespace InheritanceDemo.Controllers
             var listTest = await query.AsNoTracking().ProjectToType<TDto>().ToListAsync();
             return (Ok(await query.AsNoTracking().ProjectToType<TDto>().ToListAsync()));
         }
-           // => Ok(await query.AsNoTracking().ProjectToType<TDto>().ToListAsync());
 
         protected async Task<ActionResult<TDto>> ProjectSingleAsync<TEntity, TDto>(
             IQueryable<TEntity> query) where TEntity : class
