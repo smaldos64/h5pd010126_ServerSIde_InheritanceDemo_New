@@ -14,17 +14,17 @@ namespace InheritanceDemo.DTOs
         public int Id { get; set; }
     }
 
-    public class TeacherWithFagDto : PersonDto
+    public class TeacherWithFagDto : TeacherUpdateDto
     {
         public List<FagUpdateDto> Fag { get; set;} = new();
     }
 
-    public class TeacherWithAfdelingDto : PersonDto
+    public class TeacherWithAfdelingDto : TeacherUpdateDto
     {
         public List<AfdelingUpdateDto> Afdelinger { get; set; } = new();
     }
 
-    public class TeacherDto : PersonDto
+    public class TeacherDto : TeacherUpdateDto
     {
         public List<FagUpdateDto> Fag { get; set; } = new();
         public List<AfdelingUpdateDto> Afdelinger { get; set; } = new();

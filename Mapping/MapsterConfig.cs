@@ -16,12 +16,13 @@ namespace InheritanceDemo.Mapping
                 //.Include<StudentDto, Student>()
                 //.Include<EUXStudentDto, EUXStudent>()
                 //.Include<EUDStudentDto, EUDStudent>()
-                .Include<AnsatDto, Ansat>()
-                .Include<TeacherDto, Teacher>();
+                .Include<AnsatDto, Ansat>();
+                //.Include<TeacherDto, Teacher>();
 
-            config.NewConfig<Student, StudentDto>()
-               .Map(dest => dest.Hold.HoldId, src => src.HoldId)
-               .Map(dest => dest.Hold.HoldNavn, src => src.Hold.HoldNavn);
+            //config.NewConfig<Student, StudentDto>()
+            //   .Map(dest => dest.Hold.HoldId, src => src.HoldId)
+            //   .Map(dest => dest.Hold.HoldNavn, src => src.Hold.HoldNavn)
+            //   .TwoWays();
         }
 
         public static void RegisterGlobal()

@@ -12,17 +12,19 @@ namespace InheritanceDemo.DTOs
         public int Id { get; set; }
     }
 
-    public class EUXStudentWithHoldDto : StudentWithHoldDto
+    public class EUXStudentWithHoldDto : EUXStudentUpdateDto
     {
         public HoldUpdateDto? Hold { get; set; }
     }
 
-    public class EUXStudentWithFagDto : StudentWithFagDto
+    public class EUXStudentWithFagDto : EUXStudentUpdateDto
     {
         public List<FagUpdateDto> Fag { get; set; }
     }
 
-    public class EUXStudentDto : StudentDto
+    public class EUXStudentDto : EUXStudentUpdateDto
     {
+        public HoldUpdateDto? Hold { get; set; }
+        public List<FagUpdateDto> Fag { get; set; }
     }
 }
